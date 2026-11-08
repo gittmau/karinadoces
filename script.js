@@ -50,8 +50,30 @@ const cartCount = document.querySelector('.cart-count');
 const cartSubtotal = document.querySelector('.cart-subtotal');
 const whatsappOrder = document.querySelector('#whatsapp-order');
 const cart = new Map();
+const cartStorageKey = 'docesKaahCart';
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 const whatsappNumber = '5511910870311';
+
+const saveCart = () => {
+    localStorage.setItem(cartStorageKey, JSON.stringify(Array.from(cart.entries())));
+};
+
+const loadCart = () => {
+    const storedCart = localStorage.getItem(cartStorageKey);
+    if (!storedCart) return;
+
+    try {
+        const parsedCart = JSON.parse(storedCart);
+        if (!Array.isArray(parsedCart)) return;
+        parsedCart.forEach(([id, item]) => {
+            if (item && typeof item.name === 'string' && Number.isFinite(item.price) && Number.isInteger(item.quantity) && item.quantity > 0) {
+                cart.set(id, item);
+            }
+        });
+    } catch {
+        localStorage.removeItem(cartStorageKey);
+    }
+};
 
 const buildWhatsAppMessage = () => {
     const lines = ['Olá! Gostaria de fazer uma encomenda na Doces da Kaah:', ''];
@@ -104,6 +126,7 @@ document.querySelectorAll('.product-add').forEach((button) => {
         const id = button.dataset.product;
         const currentItem = cart.get(id);
         cart.set(id, { name: id, price: Number(button.dataset.price), quantity: currentItem ? currentItem.quantity + 1 : 1 });
+        saveCart();
         renderCart();
         setCartOpen(true);
     });
@@ -112,6 +135,11 @@ document.querySelectorAll('.product-add').forEach((button) => {
 cartToggle?.addEventListener('click', () => setCartOpen(!cartPanel.classList.contains('is-open')));
 orderToggle?.addEventListener('click', () => setCartOpen(true));
 document.querySelectorAll('[data-cart-close]').forEach((element) => element.addEventListener('click', () => setCartOpen(false)));
+whatsappOrder?.addEventListener('click', () => {
+    cart.clear();
+    localStorage.removeItem(cartStorageKey);
+    setTimeout(renderCart, 0);
+});
 
 cartItems?.addEventListener('click', (event) => {
     const actionButton = event.target.closest('[data-cart-action]');
@@ -122,7 +150,9 @@ cartItems?.addEventListener('click', (event) => {
     if (actionButton.dataset.cartAction === 'remove' || (actionButton.dataset.cartAction === 'decrease' && item.quantity === 1)) cart.delete(id);
     if (actionButton.dataset.cartAction === 'increase') item.quantity += 1;
     if (actionButton.dataset.cartAction === 'decrease' && item.quantity > 1) item.quantity -= 1;
+    saveCart();
     renderCart();
 });
 
+loadCart();
 renderCart();
