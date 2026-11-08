@@ -979,9 +979,10 @@ h1 em {
         padding: 16px 13px 18px;
     }
 
-    .product-details h3 {
-        font-size: 18px;
-    }
+    .product-details h3 {     
+        font-size: 13px! important;
+    }    
+    
 
     .product-description {
         min-height: 0;
