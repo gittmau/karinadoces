@@ -817,7 +817,7 @@ h1 em {
     font-size: 11px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
     .container {
         width: min(100% - 40px, 520px);
     }
