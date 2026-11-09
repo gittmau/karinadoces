@@ -52,7 +52,7 @@ const whatsappOrder = document.querySelector('#whatsapp-order');
 const cart = new Map();
 const cartStorageKey = 'docesKaahCart';
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-const whatsappNumber = '5511910870311';
+const whatsappNumber = '';
 
 const saveCart = () => {
     localStorage.setItem(cartStorageKey, JSON.stringify(Array.from(cart.entries())));
